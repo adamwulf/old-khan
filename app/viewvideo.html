@@ -1,0 +1,246 @@
+{% extends "page_template.html" %}
+{% block pagescript %}
+<style>
+    .breadcrumbs_nav {
+        font-weight: bold;
+    }
+    #video_dropdown {
+        display: none;
+        text-indent: 0;
+        padding-left: 5px;
+        position: relative;
+        top: 1px;
+    }
+    #video_dropdown .ui-button {
+        display: block;
+    }
+    #video_menu {
+        position: relative;
+    }
+    #video_menu ol {
+        z-index: 2;
+    }
+    #video_dropdown ol {
+        max-height: 20em;
+        padding-left: 3em;
+        overflow-y: auto;
+        overflow-x: hidden;
+        list-style: outside decimal;
+    }
+    #video_dropdown li {
+        white-space: nowrap;
+        font-weight: normal;
+    }
+    #video_dropdown li[data-selected=selected] a {
+        font-weight: bold;
+    }
+    #video_dropdown .ui-button-text, #video_dropdown .ui-menu-item a {
+        font-weight: normal;
+        line-height: inherit;
+        padding: 0px 25px 0px 1ex;
+    }
+    #video_dropdown .ui-menu-item a {
+        padding: 0px 25px 0px 0px;
+    }
+    #video_dropdown a:visited {
+        color: #DD6900;
+    }
+    #video_dropdown a:link:hover, #video_dropdown a:link:focus, #video_dropdown a:visited:hover, #video_dropdown a:visited:focus {
+        color: #DD6900;
+    }
+    .prev_next_nav {
+        display: block;
+        margin-top: 2em;
+        padding-bottom: .5ex;
+    }
+    .prev_next_nav a {
+        text-decoration: none;
+    }
+    .prev_next_nav a:hover {
+        text-decoration: underline;
+    }
+    #prev_video {
+        display: block;
+        float: left;
+        margin-right: 1em;
+        text-align: left;
+        background: url(/images/list-item-black-left.png) no-repeat 0 4px;
+        padding-top: 1px;
+        padding-left: 10px;
+        height: 20px;
+    }
+    #playlists {
+        display: block;
+        float: left;
+    }
+    #next_video {
+        display: block;
+        float: right;
+        margin-left: 1em;
+        text-align: right;
+        background: url(/images/list-item-black.png) no-repeat 100% 4px;
+        padding-top: 1px;
+        padding-right: 10px;
+        height: 20px;
+    }
+
+    #youtube_blocked {
+        visibility: hidden;
+        position: absolute;
+        left: -9999px;
+        color: red;
+        font-weight: bold;
+        clear: both;
+        padding-top: 1em;
+    }
+    .video #description {
+        padding-top: 20px;
+    }
+        .video #description h3 {
+            display: block;
+            margin: 0;
+            font-size: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #ccc;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+        .video #description h3 span.title {
+            color: #e45c02;
+        }
+        .video #description h3 span.long-description {
+            color: #555;
+            font-weight: normal;
+            position: relative;
+            top: -1px;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+    #page_sub_nav .breadcrumbs_nav {
+        font-size: 12px;
+        text-transform: uppercase;
+        margin-left: -5px;
+        width: auto;
+    }
+    #page_sub_nav .breadcrumbs_nav a {
+        text-decoration: none;
+        padding: 0 5px;
+    }
+    #page_sub_nav .breadcrumbs_nav #video_menu {
+        text-transform: none;
+    }
+</style>
+<script>
+$(function(){
+    $('<img width=0 height=0>').error(function() {
+       $("#youtube_blocked").css("visibility", "visible").css("left", "0px").css("position", "relative");
+       $("#idOVideo").hide();
+       VideoStats.prepareAlternativePlayer(); // If YouTube is hidden, use the flv player for statistics
+    }).attr('src', 'http://www.youtube.com/favicon.ico?' + Math.random()).appendTo('#page-container');
+    $('#video_selector').hide();
+    $('#video_dropdown').css('display', 'inline-block');
+    var menu = $('#video_dropdown ol').menu();
+
+    // Set the width explicitly before positioning it absolutely to satisfy IE7.
+    menu.width(menu.width()).hide().css('position', 'absolute');
+
+    menu.bind("menuselect", function(e, ui){
+        window.location.href = ui.item.children('a').attr('href');
+    });
+    $(document).bind("click focusin", function(e){
+        if ($(e.target).closest("#video_dropdown").length == 0) {
+            menu.hide();
+        }
+    });
+    var button = $('#video_dropdown > a').button({
+        icons: {
+            secondary: 'ui-icon-triangle-1-s'
+        }
+    }).show().click(function(e){
+        if (menu.css('display') == 'none')
+            menu.show().menu("activate", e, $('#video_dropdown li[data-selected=selected]')).focus();
+        else
+            menu.hide();
+        e.preventDefault();
+    });
+});
+
+{% if user %}
+    $(function(){VideoStats.startLoggingProgress();});
+{% endif %}
+
+</script>
+{% endblock pagescript %}
+{% block pagesubmenu %}
+<span class="breadcrumbs_nav">
+        <a href="/">All videos</a> &#187;
+        <a href="/?video={{video.readable_id|urlencode}}#{{playlist.title|urlencode}}">{{playlist.title|escape}}</a> &#187;
+    <form id="video_selector">
+        <select name="v">
+            {% for v in videos %}
+            <option {{v.selected|default:""}} value="{{v.youtube_id}}">{{v.title|escape}}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Go</button>
+    </form>
+    <span id="video_dropdown">
+        <a href="/video/{{video.readable_id}}?playlist={{playlist.title|urlencode}}">{{video.title|escape}}</a>
+        <div id="video_menu">
+            <ol>
+                {% for v in videos %}
+                <li data-selected='{{v.selected|default:""}}'><a href="/video/{{v.readable_id}}?playlist={{playlist.title|urlencode}}">{{v.title|escape}}</a></li>
+                {% endfor %}
+            </ol>
+        </div>
+    </span>
+</span>
+{% endblock pagesubmenu %}
+{% block pagecontent %}
+<article class="video">
+    <div id="description">
+        <h3>
+            <span class="title">{{video.title|escape}}</span>
+        {% if video.description %}
+            <span class="long-description">: {{video.description|escape}}</span>
+        {% endif %}
+        </h3>
+    </div>
+    <div style="margin-top: -15px;">
+        <nav class="prev_next_nav">
+            {% if previous_video %}
+            <label id="prev_video">
+                <a rel=prev href="/video/{{previous_video.readable_id}}?playlist={{playlist.title|urlencode}}"><b>Previous Video:</b> {{previous_video.title}}</a>
+            </label>
+            {% endif %}
+            {% if next_video %}
+            <label id="next_video">
+                <a rel=next href="/video/{{next_video.readable_id}}?playlist={{playlist.title|urlencode}}"><b>Next Video:</b> {{next_video.title}}</a>
+            </label>
+            {% endif %}
+        </nav>
+
+        <div id="youtube_blocked">
+            {% flv_player_embed video_path %}
+        </div>
+
+        {% youtube_player_embed video.youtube_id %}
+
+        <span class="video_extra_links"><nobr>
+        {% if user %}
+            {% possible_points_badge awarded_points video_points_base %}
+        {% endif %}
+        <span class="extra-link-bar"><a href="{{video_path}}">Download</a>
+        {% if exercise %}
+            | <a href="/exercises?exid={{exercise}}">Exercises</a>
+            {% endif %}</span>
+        </nobr></span>
+
+        {% video_comments video playlist comments_page %}
+        {% video_qa video playlist qa_page qa_expand_id %}
+        </div>
+    </article>
+{% endblock pagecontent %}
+{% block pagefooter %}
+{% include "page_footer_short.html" %}
+{% endblock %}

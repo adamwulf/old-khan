@@ -1,0 +1,21 @@
+[INFO     2012-05-31 12:50:22,282 bulkloader.py] Logging to bulkloader-log-20120531.125022
+[INFO     2012-05-31 12:50:22,282 bulkloader.py] Throttling transfers:
+[INFO     2012-05-31 12:50:22,282 bulkloader.py] Bandwidth: 250000 bytes/second
+[INFO     2012-05-31 12:50:22,283 bulkloader.py] HTTP connections: 8/second
+[INFO     2012-05-31 12:50:22,283 bulkloader.py] Entities inserted/fetched/modified: 20/second
+[INFO     2012-05-31 12:50:22,283 bulkloader.py] Batch Size: 10
+[INFO     2012-05-31 12:50:22,283 bulkloader.py] Opening database: bulkloader-progress-20120531.125022.sql3
+[INFO     2012-05-31 12:50:22,294 bulkloader.py] Opening database: bulkloader-results-20120531.125022.sql3
+[DEBUG    2012-05-31 12:50:22,298 adaptive_thread_pool.py] [Thread-1] WorkerThread: started
+[DEBUG    2012-05-31 12:50:22,309 adaptive_thread_pool.py] [Thread-2] WorkerThread: started
+[DEBUG    2012-05-31 12:50:22,320 adaptive_thread_pool.py] [Thread-3] WorkerThread: started
+[DEBUG    2012-05-31 12:50:22,331 adaptive_thread_pool.py] [Thread-4] WorkerThread: started
+[DEBUG    2012-05-31 12:50:22,342 adaptive_thread_pool.py] [Thread-5] WorkerThread: started
+[DEBUG    2012-05-31 12:50:22,353 adaptive_thread_pool.py] [Thread-6] WorkerThread: started
+[DEBUG    2012-05-31 12:50:22,364 adaptive_thread_pool.py] [Thread-7] WorkerThread: started
+[DEBUG    2012-05-31 12:50:22,375 adaptive_thread_pool.py] [Thread-8] WorkerThread: started
+[DEBUG    2012-05-31 12:50:22,386 adaptive_thread_pool.py] [Thread-9] WorkerThread: started
+[DEBUG    2012-05-31 12:50:22,397 adaptive_thread_pool.py] [Thread-10] WorkerThread: started
+[DEBUG    2012-05-31 12:50:22,408 bulkloader.py] Configuring remote_api. url_path = /, servername = adamwulftestbed.appspot.com
+[DEBUG    2012-05-31 12:50:22,439 bulkloader.py] Bulkloader using app_id: adamwulftestbed
+[INFO     2012-05-31 12:50:22,439 bulkloader.py] Connecting to adamwulftestbed.appspot.com/

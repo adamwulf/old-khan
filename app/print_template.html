@@ -1,0 +1,42 @@
+{% extends "arithmetic_template.html" %}
+{% block pagetitle %}Print Exercise{% endblock pagetitle %}
+{% block pagescript %}
+  
+{% endblock pagescript %}
+
+{% block pagesubmenu %}
+  			<table border=0 width="100%" cellpadding=0 cellspacing=0>
+  				<tr>
+  					<td bgcolor=#e5ecf9 align=left width="100%"><B><A href="/exercisedashboard">Exercises </a>: {{extitle}}</B>
+  					{% if exercise_videos %}
+  						<A href="/viewexercisevideos?exkey={{exercise.key}}">[Watch Videos]</A>
+  					{% endif %}
+  					</td>
+  					<td bgcolor=#e5ecf9 align=right style="white-space:nowrap;">
+  						<A href="/exercises?exid={{exid}}">Do this exercise</A>
+  						&nbsp;&nbsp;
+  					</td>
+                    <td bgcolor=#e5ecf9>
+                        {% streak_bar user_exercise %}
+  					</td>
+  				</tr>
+  			</table>
+{% endblock pagesubmenu %}
+
+{% block pagecontent %}
+
+<table width=100% border=0 cellpadding=0 cellspacing=0>
+  <tr>
+
+    <td bgcolor=#ffffff><img width=1 height=20 alt=""></td>
+  </tr>
+</table>
+{% for i in problem_numbers %}
+<table width="100%"><tr>
+	<td valign="top">{{i}}.</td>
+	<td><iframe id="problem{{i}}" name="problem{{i}}" frameborder="0" width="100%" height="0" scrolling="no" src="printproblem?exid={{exid}}&problem_number={{i}}"></iframe></td>
+</tr></table>
+<hr/>
+{% endfor %}
+</table>
+{% endblock pagecontent %}

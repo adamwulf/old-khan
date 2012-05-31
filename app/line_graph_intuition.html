@@ -1,0 +1,187 @@
+{% extends arithmetic_template %}
+{% block maincode %}
+<script language=Javascript1.2><!--
+currentexercise = "linegraph";
+
+var x1 = get_random();
+var x2 = get_random();
+while (x2==x1)
+	x2 = get_random();
+	
+var y1 = get_random();
+var y2 = get_random();
+var slopeNum = y1-y2;
+var slopeDen = x1-x2;
+var slopeIncr = Math.abs(slopeDen)/getGCD(Math.abs(slopeNum),Math.abs(slopeDen));
+
+var correctSlope = (y1-y2)/(x1-x2);
+var correctIntercept = y1-x1*correctSlope;
+
+
+var curSlopeNum = 1;
+var curSlopeDen = 1;
+var curIntNum = 1;
+var curIntDen = 1;
+
+
+
+function eqString()
+{
+	var expString = "<font size=15>`y=";
+	expString+=formatFraction(curSlopeNum, curSlopeDen, false);
+	expString+="x";
+	expString+=formatFraction(curIntNum, curIntDen, true);
+	expString+="`</font>";
+	return expString;
+}
+
+function slope(num)
+{
+	var oldDen = curSlopeDen;
+	curSlopeDen = getLCM(curSlopeDen, slopeIncr);
+	curSlopeNum = curSlopeDen/oldDen*curSlopeNum +num*curSlopeDen/slopeIncr;
+	document.getElementById("equation").innerHTML = eqString();
+	translate();
+	//text([-11, 9], eqString(), right, 'eqstring');
+	present.plot(f, 'graph');
+	checkAnswer();
+}
+
+function intercept(num)
+{
+	var oldDen = curIntDen;
+	curIntDen = getLCM(curIntDen, slopeIncr);
+	curIntNum = curIntDen/oldDen*curIntNum +num*curIntDen/slopeIncr;
+	document.getElementById("equation").innerHTML = eqString();
+	translate();
+	//text([-11, 9], eqString(), right, 'eqstring');
+	present.plot(f, 'graph');
+	checkAnswer();
+}
+function formatFraction(n, d, sign)
+{
+	var gcd = getGCD(n, d);
+	var new_numerator = n/gcd;
+	var new_denominator = d/gcd;
+	
+	var expressionString = "";
+	if(sign || (n/d <0))
+	{
+		if(n/d >= 0)
+			expressionString +="+ ";
+		else
+			expressionString +="- ";
+	}
+	
+	if (new_numerator== 0) {
+		expressionString +="0";
+	}
+	else if (new_denominator== 1) {
+		expressionString +=Math.abs(new_numerator);
+	}
+	else if (new_denominator== 0) {
+		expressionString += "undefined";
+	}
+	else {
+		expressionString += Math.abs(new_numerator)+"/"+
+					Math.abs(new_denominator);
+	}
+	return expressionString;
+}
+
+var f = function f(x)
+{
+	return (curSlopeNum/curSlopeDen*x+curIntNum/curIntDen);
+}
+
+
+function r2(x)
+{
+	return (Math.round(x*100)/100);
+}
+
+function graph_update() {
+	present.initPicture(-10,10, -10, 10);
+	present.fontfamily = "arial";
+	present.fontstyle="normal";
+	present.fontsize = "10";
+	present.stroke = "#EEEEEE";
+	present.strokewidth = "2";
+	for(var i=-10; i<11; i++)
+	{
+		if (i!=0)
+		{
+			present.line([i,-11], [i,11]);
+			present.line([-11,i], [11,i]);
+			present.text([i, .1], i, below);
+			present.text([0, i], i, right);
+		}
+	}
+	present.axes();
+	present.ASdot([x1,y1], 2, "#528B8B", "#528B8B");
+	present.ASdot([x2,y2], 2, "#528B8B", "#528B8B");
+	present.fontsize="25";
+	present.strokewidth = "1";
+	//fontfill="black";
+	//stroke = "black";
+	//text([-11, 9], eqString(), right, 'eqstring');
+	present.stroke="orange";
+	present.plot(f, 'graph');
+}
+
+function checkAnswer()
+{
+	if (r2(curSlopeNum/curSlopeDen)==r2(correctSlope) && r2(curIntNum/curIntDen)==r2(correctIntercept))
+    {
+        handleCorrectness(true);
+		$("#check-answer-results").show();
+		document.images.feedback.src = correct.src;
+	}
+    else
+    {
+		$("#check-answer-results").hide();
+    }
+}
+
+
+
+//-->
+</script>
+{% endblock maincode %}
+{% block maincell %}<ul>Adjust the slope and y-intercept of the line until it connects the two points.  This
+module is special in that you really can't get the question wrong--you just need to keep trying.  The whole point is to help you visualize
+what the slope and y-intercept do to a line.<P>
+<iframe name="present" frameborder=0 src="/graphpage.html?w=500&h=500" height="550" width="100%"></iframe>
+{% endblock maincell %}
+{% block answerform %}
+		<div style="text-align:right;">
+		<nobr><input type="button" class="button" value="-" onClick="slope(-1)"> Slope <input type="button" class="button" value="+" onClick="slope(+1)">&nbsp;&nbsp;&nbsp;&nbsp;
+		<input type="button" class="button" value="-" onClick="intercept(-1)"> Y-Intercept <input type="button" class="button" value="+" onClick="intercept(+1)"></nobr><br>
+		</div>
+
+		<table border=0>
+		<tr>
+		<td colspan="2">
+		<DIV ID="equation"><script language=Javascript1.2><!-- 
+
+		document.write(eqString());
+
+		//-->
+		</script></DIV></td>
+		</tr>
+		</table>
+		<input type="hidden" id="exid" name="exid" value="{{exid}}">
+		<input type="hidden" id="streak" name="streak" value="{{streak}}">
+		<input type="hidden" id="key" name="key" value="{{key}}">
+		<input type="hidden" id="start_time" name="start_time" value="{{start_time}}">
+		<input type="hidden" id="correct" name="correct" value="1">
+		<input type="hidden" id="time_warp" name="time_warp" value="{{time_warp}}">
+		<input type="hidden" id="problem_number" name="problem_number" value="{{problem_number}}">
+		<div id="check-answer-results" style="display: none;">
+		  <img src="/images/blank.gif" name="feedback" id="feedback"><div id="nextbutton" style="position:relative;">
+		  <input type="button" class="button green" name="correctnextbutton" value="Correct! Next Question..." onClick="submitForm()"></div>
+		</div>
+
+
+{% endblock answerform %}
+
